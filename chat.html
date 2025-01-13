@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Caveat", serif;
+            background-color: #C4F5FC;
+            margin: 1;
+            padding: 1;
+            background-image: url("/assets/fish.gif");
+            background-size: cover;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 80px auto;
+            background: #C4EBC8;
+            padding: 45px;
+            border-radius: 50px;
+            background-image: url("/assets/greeen.jpg");
+            box-shadow: 0 4px 6px #FCD3DE(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 170  px;
+        }
+
+        .form-group input {
+            width: 95%;
+            padding: 10px;
+            border: 2px solid #F2B880;
+            border-radius: 50px;
+        }
+
+        .button {
+            transition: all 0.3s ease-in-out;
+            font-family: "Dosis", sans-serif;
+            display: inline-block;
+            width: calc(50% - 15px); /* Кнопки занимают 50% ширины с учётом отступов */
+            height: 40px;
+            border-radius: 40px;
+            background-image: linear-gradient(135deg, #DC602E 0%, #FFBFA0 100%);
+            box-shadow: 0 20px 30px -6px rgba(97, 238, 116, 0.304);
+            outline: #EA2B1F;
+            cursor: pointer;
+            border: 2px solid #F4EBBE;
+            font-size: 20px;
+            color: white;
+        }
+
+        .button:hover {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .button:active {
+            opacity: 0.5;
+        }
+
+        .button:disabled {
+            background-color: #DB3A34;
+        }
+
+        .button:disabled {
+            background-color: #F2B880;
+            cursor: not-allowed;
+        }
+
+        .chat-box {
+            height: 300px;
+            border: 5px solid #FF8547;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 26px;
+        }
+
+        .message .author {
+            font-weight: bold;
+        }
+
+        .error {
+            color: #DB3A34;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- Раздел для присоединения -->
+        <div id="join-section">
+            <h1>Присоединение к комнате</h1>
+            <div class="form-group">
+                <label for="room-code"><h2>Код комнаты</h2></label>
+                <input type="text" id="room-code" placeholder="Введите код комнаты">
+            </div>
+            <button class="button" onclick="joinRoom()">Присоединиться</button>
+            <button class="button" onclick="wayback()">Назад</button>
+            <div class="error" id="join-error"></div>
+        </div>
+
+        <!-- Раздел для чата -->
+        <div id="chat-section" class="hidden">
+            <h2>Комната: <span id="room-id-display"></span></h2>
+            <div class="chat-box" id="chat-box"></div>
+            <input type="text" id="message-input" placeholder="Введите сообщение">
+            <button class="button" onclick="sendMessage()">Отправить</button>
+            <button class="button" onclick="leaveRoom()">Выйти из комнаты</button>
+        </div>
+    </div>
+
+    <script>
+let token = localStorage.getItem('token'); // Здесь можно вставить реальный токен авторизации.
+let currentRoomId = "";
+let lastMessageTimestamp = null;
+let messageIds = new Set(); // Хранение ID уже добавленных сообщений
+let currentUserId = null;  // Добавляем переменную для текущего пользователя
+let sentMessages = new Set();
+
+function wayback() {
+    window.location.href = "/";
+}
+
+function switchSection(showChat) {
+    document.getElementById("join-section").classList.toggle("hidden", showChat);
+    document.getElementById("chat-section").classList.toggle("hidden", !showChat);
+}
+
+function autoUpdateChat() {
+    if (!currentRoomId) return;
+    const timer = setTimeout(() => {
+        fetch(`/api/rooms/${currentRoomId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.messages) {
+                const chatBox = document.getElementById("chat-box");
+
+                // Фильтруем сообщения, чтобы не показывать те, которые мы только что отправили
+                const newMessages = data.messages.filter(msg => {
+                    return !messageIds.has(msg.timestamp) && !sentMessages.has(msg.timestamp);
+                });
+
+                newMessages.forEach(message => {
+                    const messageElement = document.createElement("div");
+                    messageElement.className = "message";
+
+                    // Проверяем, кто автор сообщения
+                    const author = message.author === currentUserId ? "Вы" : message.author;
+                    if (message.author !== currentUserId) {
+                        messageElement.innerHTML = `<span class="author">${author}:</span> ${message.content}`;
+                        chatBox.appendChild(messageElement);
+
+                        // Добавляем ID сообщения в список для отслеживания
+                        messageIds.add(message.timestamp);
+                    }
+                });
+
+                // Обновляем последний timestamp, чтобы не загружать старые сообщения
+                if (newMessages.length > 0) {
+                    lastMessageTimestamp = newMessages[newMessages.length - 1].timestamp;
+                    chatBox.scrollTop = chatBox.scrollHeight; // Прокрутка вниз
+                }
+            }
+            autoUpdateChat(); // Продолжаем автообновление
+        });
+    }, 3000); // Обновление каждые 3 секунды
+}
+
+function joinRoom() {
+    const roomId = document.getElementById("room-code").value;
+
+    fetch('/api/rooms/join', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ roomId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.message) {
+            currentRoomId = roomId;
+            currentUserId = localStorage.getItem('username');  // Предполагаем, что сервер возвращает ID пользователя
+            document.getElementById("room-id-display").innerText = roomId;
+            switchSection(true);
+            loadChatHistory(); // Загружаем историю чата
+        } else {
+            document.getElementById("join-error").innerText = data.error;
+        }
+    });
+}
+
+function loadChatHistory() {
+    fetch(`/api/rooms/${currentRoomId}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.messages) {
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = ""; // Очистим чат перед загрузкой истории
+            messageIds.clear(); // Очищаем Set перед загрузкой истории
+            data.messages.forEach(message => {
+                const messageElement = document.createElement("div");
+                messageElement.className = "message";
+
+                // Если сообщение отправил текущий пользователь, показываем "Вы"
+                const author = message.author === currentUserId ? "Вы" : message.author;
+                messageElement.innerHTML = `<span class="author">${author}:</span> ${message.content}`;
+                chatBox.appendChild(messageElement);
+
+                // Добавляем ID сообщения в список
+                messageIds.add(message.id);
+            });
+            autoUpdateChat(); // Запускаем автообновление чата
+        }
+    });
+}
+
+function sendMessage() {
+    const content = document.getElementById("message-input").value;
+
+    fetch(`/api/rooms/${currentRoomId}/messages`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ content })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.message) {
+            const chatBox = document.getElementById("chat-box");
+            const messageElement = document.createElement("div");
+            messageElement.className = "message";
+            messageElement.innerHTML = `<span class="author">Вы:</span> ${content}`;
+            chatBox.appendChild(messageElement);
+
+            // Сохраняем отправленное сообщение, чтобы избежать его повторного отображения
+            sentMessages.add(data.message.timestamp);
+            document.getElementById("message-input").value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
+}
+
+function leaveRoom() {
+    fetch(`/api/rooms/${currentRoomId}/leave`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(() => {
+        currentRoomId = "";
+        switchSection(false);
+    });
+
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pubid = urlParams.get('pubid');
+
+    if (pubid) {
+        // Если есть параметр pubid, сразу присоединяемся к комнате
+        document.getElementById("room-code").value = pubid; // Устанавливаем код комнаты в input
+        joinRoom(); // Присоединяемся автоматически
+    }
+});
+    </script>
+</body>
+</html>
+    

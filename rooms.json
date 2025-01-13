@@ -1,0 +1,145 @@
+{
+  "249962": {
+    "name": "fff",
+    "isPublic": true,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [
+      "hhh"
+    ],
+    "messages": [],
+    "createdAt": "2025-01-09T23:32:31.084Z"
+  },
+  "331121": {
+    "name": "22",
+    "isPublic": true,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [
+      "hhh"
+    ],
+    "messages": [],
+    "createdAt": "2025-01-10T03:31:35.198Z"
+  },
+  "384496": {
+    "name": "fff",
+    "isPublic": true,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [
+      "hhh"
+    ],
+    "messages": [
+      {
+        "author": "hhh",
+        "content": "ыупнр",
+        "timestamp": "2025-01-10T00:07:20.993Z"
+      },
+      {
+        "author": "hhh",
+        "content": "кпекр",
+        "timestamp": "2025-01-10T00:07:37.219Z"
+      },
+      {
+        "author": "hhh",
+        "content": "гешене",
+        "timestamp": "2025-01-10T00:07:59.134Z"
+      },
+      {
+        "author": "hhh",
+        "content": "lfdkht",
+        "timestamp": "2025-01-10T02:34:11.711Z"
+      },
+      {
+        "author": "hhh",
+        "content": "p87y6o876o87",
+        "timestamp": "2025-01-10T12:31:53.880Z"
+      },
+      {
+        "author": "hhh",
+        "content": "kuyrjyr5ku6ktu6tkk",
+        "timestamp": "2025-01-10T12:33:24.775Z"
+      },
+      {
+        "author": "hhh",
+        "content": "гекогел",
+        "timestamp": "2025-01-10T15:03:54.289Z"
+      },
+      {
+        "author": "hhh",
+        "content": "123446",
+        "timestamp": "2025-01-10T15:19:44.170Z"
+      },
+      {
+        "author": "hhh",
+        "content": "k6tktlo8",
+        "timestamp": "2025-01-11T03:18:48.184Z"
+      },
+      {
+        "author": "hhh",
+        "content": "7i5766t",
+        "timestamp": "2025-01-11T03:19:27.695Z"
+      }
+    ],
+    "createdAt": "2025-01-10T00:07:06.994Z"
+  },
+  "393416": {
+    "name": "fff",
+    "isPublic": true,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [],
+    "messages": [],
+    "createdAt": "2025-01-10T02:29:03.707Z"
+  },
+  "450885": {
+    "name": "ррр",
+    "isPublic": true,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [],
+    "messages": [
+      {
+        "author": "hhh",
+        "content": "шдпелг76е5ш76ещ",
+        "timestamp": "2025-01-09T23:53:24.804Z"
+      }
+    ],
+    "createdAt": "2025-01-09T23:43:54.300Z"
+  },
+  "600630": {
+    "name": "fff",
+    "isPublic": false,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [
+      "hhh"
+    ],
+    "messages": [],
+    "createdAt": "2025-01-10T00:00:06.228Z"
+  },
+  "655350": {
+    "name": "34",
+    "isPublic": true,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [],
+    "messages": [],
+    "createdAt": "2025-01-09T23:24:26.051Z"
+  },
+  "965758": {
+    "name": "ggg",
+    "isPublic": true,
+    "maxMessages": 100,
+    "owner": "hhh",
+    "members": [],
+    "messages": [
+      {
+        "author": "hhh",
+        "content": "egdh",
+        "timestamp": "2025-01-10T15:24:51.652Z"
+      }
+    ],
+    "createdAt": "2025-01-09T18:17:18.252Z"
+  }
+}
